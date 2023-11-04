@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import bcryptjs from "bcryptjs";
 import prisma, { User } from "../models/index.js";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
+export interface jwtCustomPayload extends JwtPayload {
+    id: string;
+}
 class UserControllers {
     async register(req: Request, res: Response) {
         try {
@@ -61,7 +64,7 @@ class UserControllers {
         try {
             const { email, password }: { email: string; password: string } =
                 req.body;
-
+            console.log(req.body);
             /**
              * check all fields are given
              */
@@ -133,7 +136,11 @@ class UserControllers {
             return res.json({
                 success: true,
                 message: "User Logged In Successfully",
-                user: User_Exists,
+                user: {
+                    id: User_Exists.id,
+                    name: User_Exists.name,
+                    email: User_Exists.email,
+                },
             });
         } catch (error) {
             return res.status(500).json({
